@@ -1,0 +1,63 @@
+@startuml Domain model
+
+component Infrastructure{
+
+    class User {
+        Name
+        Credentials
+    }
+}
+
+component "Assets base" as AssetBase{
+
+    class Household{
+        Name
+    }
+
+    class AssetType{
+        Name
+        TemplateLifecycle
+    }
+
+
+    abstract class Asset{
+        UID
+        Name
+        Lifecycle
+        ResidualValue
+        CurrentValue
+    }
+
+    class StorageAsset
+
+    class SimplePhysicalAsset
+
+    class SimpleFinancialAsset
+}
+
+component Expenditure{
+
+    abstract class Expenditure
+
+    class OperationExpenditure
+
+    class CapitalExpenditure
+
+}
+
+Asset <|-- StorageAsset
+Asset <|-- SimplePhysicalAsset
+Asset <|-- SimpleFinancialAsset
+
+SimplePhysicalAsset "*" -> "1" StorageAsset : located
+
+CapitalExpenditure -down-|> Expenditure
+OperationExpenditure -down-|> Expenditure
+
+Household "1..*" -left-> "1..*" User : manage
+Household *--> Asset
+Asset "*" -> "1" AssetType : grouped by
+
+Expenditure "*" <- "1" Asset : for
+
+@enduml
