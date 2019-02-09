@@ -11,11 +11,12 @@ component Infrastructure{
         ShareHousehold(Name, UserID)
         AcceptHouseholdShare(Name)
         DeleteHousehold(Name)
+        RenameHousehold(Name, NewName)
     }
 
     class PermissionToManageHousehold{
         UserID,
-        HouseholdName,
+        HouseholdId,
         Active
     }
 
@@ -26,9 +27,11 @@ component Infrastructure{
 component "Assets base" as AssetBase{
 
     class Household{
+        HouseholdId
         Name
 
         Create(Name)
+        SetName(Name)
         CreateAssetType(Name, TypicalLifecycle?)
         CreateAsset(Name, AssetType, Lifecycle?)
     }

@@ -1,4 +1,4 @@
-@startuml
+@startuml Deployment
 
 node LoadBalancer {
     component NGINX

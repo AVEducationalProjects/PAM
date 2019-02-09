@@ -1,0 +1,34 @@
+@startuml UseCases
+
+actor "PAM Service User" as PAMUser
+
+PAMUser -u-> (Sign in using Facebook)
+
+(Manage Households) as ManageHouseholds
+PAMUser --> ManageHouseholds
+
+ManageHouseholds <|-- (Create Household)
+ManageHouseholds <|-- (Share Household)
+ManageHouseholds <|-- (Accept Household Share)
+ManageHouseholds <|-- (Remove Household)
+ManageHouseholds <|-- (Rename Household)
+ManageHouseholds <|-- (View Households)
+ManageHouseholds <|-- (View Household Share Requests)
+
+(Manage asset types) as ManageAssetTypes
+PAMUser -> ManageAssetTypes
+
+ManageAssetTypes <|-- (View asset type list)
+ManageAssetTypes <|-- (Create asset type)
+ManageAssetTypes <|-- (Edit asset type)
+ManageAssetTypes <|-- (Deprecate asset type)
+
+(Manage assets) as ManageAsset
+PAMUser -l-> ManageAsset
+
+ManageAsset <|-- (View asset list filtered by type)
+ManageAsset <|-- (Create asset)
+ManageAsset <|-- (Edit asset)
+ManageAsset <|-- (Remove asset)
+
+@enduml
