@@ -1,0 +1,39 @@
+@startuml
+
+node LoadBalancer {
+    component NGINX
+}
+
+rectangle DMZ {
+
+    node WebAPI {
+        component ".net core web api service" as WebAPIService
+    }
+
+    node UserService {
+        component ".net core user manager service" as UserManagerService
+    }
+
+    node AssetService {
+        component ".net core asset service" as AssetManagerService
+
+    }
+
+    node Mongo{
+        database "Mongo asset repositary" as AssetRepo
+        database "Mongo user repositary" as UserRepo
+    }
+
+}
+
+LoadBalancer -- WebAPI
+
+UserManagerService ..> UserRepo
+AssetManagerService ..> AssetRepo
+
+WebAPIService ..> UserManagerService
+WebAPIService ..> AssetManagerService
+UserManagerService ..>AssetManagerService
+
+
+@enduml

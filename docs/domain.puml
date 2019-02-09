@@ -3,61 +3,62 @@
 component Infrastructure{
 
     class User {
-        Name
+        UserID
         Credentials
+
+        Create(UserID, Credentials)
+        CreateHousehold(Name)
+        ShareHousehold(Name, UserID)
+        AcceptHouseholdShare(Name)
+        DeleteHousehold(Name)
     }
+
+    class PermissionToManageHousehold{
+        UserID,
+        HouseholdName,
+        Active
+    }
+
+    User "1"->"*" PermissionToManageHousehold : has
+
 }
 
 component "Assets base" as AssetBase{
 
     class Household{
         Name
+
+        Create(Name)
+        CreateAssetType(Name, TypicalLifecycle?)
+        CreateAsset(Name, AssetType, Lifecycle?)
     }
 
     class AssetType{
         Name
-        TemplateLifecycle
+        TypicalLifecycle
+
+        SetName(Name)
+        SetTypicalLifecycle(TypicalLifecycle)
+        Deprecate()
     }
 
 
-    abstract class Asset{
-        UID
+    class Asset{
+        AssetID
         Name
         Lifecycle
-        ResidualValue
-        CurrentValue
+
+        SetName(Name)
+        SetLifecycle(Lifecycle)
+        Remove()
     }
 
-    class StorageAsset
-
-    class SimplePhysicalAsset
-
-    class SimpleFinancialAsset
+    Household "1"==>"1..*" AssetType: uses classification
+    Household *--> Asset
+    Asset "*" -> "1" AssetType : grouped by
 }
 
-component Expenditure{
 
-    abstract class Expenditure
-
-    class OperationExpenditure
-
-    class CapitalExpenditure
-
-}
-
-Asset <|-- StorageAsset
-Asset <|-- SimplePhysicalAsset
-Asset <|-- SimpleFinancialAsset
-
-SimplePhysicalAsset "*" -> "1" StorageAsset : located
-
-CapitalExpenditure -down-|> Expenditure
-OperationExpenditure -down-|> Expenditure
-
-Household "1..*" -left-> "1..*" User : manage
-Household *--> Asset
-Asset "*" -> "1" AssetType : grouped by
-
-Expenditure "*" <- "1" Asset : for
+Household "1" <.left. "*" PermissionToManageHousehold : allows to operate
 
 @enduml
