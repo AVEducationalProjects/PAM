@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  pam:
+    image: ${DOCKER_REGISTRY-}pam
+    build:
+      context: .
+      dockerfile: PAM/Dockerfile

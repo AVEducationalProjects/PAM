@@ -1,0 +1,29 @@
+@startuml LoginViaFacebook
+
+actor User
+boundary LoginPage
+control SignInCallback
+entity UserService
+collections Facebook 
+
+User -> LoginPage : Get login page
+LoginPage --> User : Link to login via Facebook
+
+User -> Facebook : Login Request
+Facebook -> SignInCallback : Redirect with token
+
+SignInCallback -> UserService : Get user info
+UserService --> SignInCallback : user info
+
+alt user not registered
+    SignInCallback -> Facebook : Get email & name
+    Facebook --> SignInCallback : email & name
+    SignInCallback -> UserService : Create User
+    UserService --> SignInCallback : user info
+end
+
+SignInCallback -> SignInCallback : Create JSON Web Token
+
+SignInCallback --> User : redirect to main page with JWT
+
+@enduml

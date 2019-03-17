@@ -1,6 +1,6 @@
 @startuml Domain model
 
-component Infrastructure{
+component "User Service"{
 
     class User {
         UserID
@@ -24,7 +24,7 @@ component Infrastructure{
 
 }
 
-component "Assets base" as AssetBase{
+component "Asset Service" as AssetBase{
 
     class Household{
         HouseholdId
