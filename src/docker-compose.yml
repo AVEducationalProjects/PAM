@@ -1,8 +1,15 @@
 version: '3.4'
 
 services:
-  pam:
-    image: ${DOCKER_REGISTRY-}pam
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+
+  pamuserservice:
+    image: ${DOCKER_REGISTRY-}pamuserservice
     build:
       context: .
-      dockerfile: PAM/Dockerfile
+      dockerfile: PAM.UserService/Dockerfile
+

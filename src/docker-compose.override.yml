@@ -1,14 +1,10 @@
 version: '3.4'
 
 services:
-  pam:
+  pamuserservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_HTTPS_PORT=44308
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__UserDb=mongodb://mongo:27017
     ports:
-      - "57130:80"
-      - "44308:443"
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - "8001:80"
