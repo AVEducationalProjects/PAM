@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using PAM.UserService.Model;
 using System.Linq;
@@ -7,12 +8,17 @@ namespace PAM.UserService.Services
 {
     public class UserRepositary : IUserRepositary
     {
-        private IMongoCollection<User> Users { get; set; }
+        private IMongoCollection<User> Users { get; }
 
-        public UserRepositary(IConfiguration configuration)
+        private ILogger<UserRepositary> Logger { get; }
+
+        public UserRepositary(ILogger<UserRepositary> logger, IConfiguration configuration)
         {
+            Logger = logger;
+
             var client = new MongoClient(configuration.GetConnectionString("UserDb"));
-            Users = client.GetDatabase("pam_users").GetCollection<User>("users");
+            Users = client.GetDatabase(configuration.GetValue<string>("Database"))
+                .GetCollection<User>(configuration.GetValue<string>("UserCollection"));
         }
 
         public void Create(User user)
