@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
@@ -23,13 +24,19 @@ namespace PAM.UserService
         {
             Configuration = configuration;
             Logger = logger;
+
+            PrintVersionToLog();
         }
 
         public IConfiguration Configuration { get; }
 
         public ILogger<Startup> Logger { get;  }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        private void PrintVersionToLog()
+        {
+            Logger.LogInformation($"Personal Asset Manager User Service {Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion}");
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
@@ -37,11 +44,11 @@ namespace PAM.UserService
 
             SetupDatabase();
             services.AddScoped<IUserRepositary, UserRepositary>();
+            services.AddScoped<IHouseholdRepositary, HouseholdRepositary>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())

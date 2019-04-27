@@ -5,8 +5,8 @@ namespace PAM.UserService.Services
     public interface IUserRepositary
     {
         User FindByEmail(string email);
-        void Create(User user);
+        User Create(User user);
         void DeleteByEmail(string email);
-        void CreateOrUpdate(User user);
+        User CreateOrUpdate(User user);
     }
 }

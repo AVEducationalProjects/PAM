@@ -5,7 +5,7 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>33a256b2-ef6b-42a1-8710-94a1bb826ff8</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
+    <DockerServiceUrl>https://localhost</DockerServiceUrl>
     <DockerServiceName>pam</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>

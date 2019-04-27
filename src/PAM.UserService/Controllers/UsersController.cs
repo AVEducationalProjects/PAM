@@ -20,23 +20,30 @@ namespace PAM.UserService.Controllers
         }
 
         [HttpGet]
-        public UserDTO Get(string email)
+        public ActionResult<UserDTO> Get(string email)
         {
-            return _mapper.Map<UserDTO>(
+            var result = _mapper.Map<UserDTO>(
                 _userRepositary.FindByEmail(email));
+
+            if (result == null)
+                return NotFound();
+
+            return result;
         }
 
         [HttpPost]
-        public void Post(UserDTO user)
+        public ActionResult<UserDTO> Post(UserDTO user)
         {
-            _userRepositary.Create(
-                _mapper.Map<User>(user));
+            return _mapper.Map<UserDTO>(
+                _userRepositary.Create(
+                    _mapper.Map<User>(user)));
         }
 
-        public void Put(UserDTO user)
+        public ActionResult<UserDTO> Put(UserDTO user)
         {
-            _userRepositary.CreateOrUpdate(
-                _mapper.Map<User>(user));
+            return _mapper.Map<UserDTO>(
+                _userRepositary.CreateOrUpdate(
+                    _mapper.Map<User>(user)));
         }
 
         [HttpDelete]

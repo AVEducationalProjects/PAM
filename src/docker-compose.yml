@@ -7,8 +7,28 @@ services:
     ports:
       - 27017:27017
 
-  pamuserservice:
+  userservice.pam:
     image: ${DOCKER_REGISTRY-}pamuserservice
     build:
       context: .
       dockerfile: PAM.UserService/Dockerfile
+    links:
+      - mongo
+
+  assetservice.pam:
+    image: ${DOCKER_REGISTRY-}pamassetservice
+    build:
+      context: .
+      dockerfile: PAM.AssetService/Dockerfile
+    links:
+      - mongo
+
+
+  pam:
+    image: ${DOCKER_REGISTRY-}pamfrontend
+    build:
+      context: .
+      dockerfile: PAM/Dockerfile
+    links:
+      - "userservice.pam"
+      - "assetservice.pam"

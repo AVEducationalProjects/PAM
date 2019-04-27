@@ -21,19 +21,21 @@ namespace PAM.UserService.Services
                 .GetCollection<User>(configuration.GetValue<string>("UserCollection"));
         }
 
-        public void Create(User user)
+        public User Create(User user)
         {
             Users.InsertOne(user);
+            return user;
         }
 
-        public void CreateOrUpdate(User user)
+        public User CreateOrUpdate(User user)
         {
             if (Users.Find(x => x.Email == user.Email).Any())
             {
                 Users.FindOneAndReplace(x => x.Email == user.Email, user);
-                return;
+                return user;
             }
             Create(user);
+            return user;
         }
 
         public void DeleteByEmail(string email)
