@@ -22,13 +22,11 @@ namespace PAM.Controllers
 
         private readonly IUserService _userService;
 
-        private readonly JWTOptions _jwtOptions;
 
-        public AuthController(IFacebookService facebook, IUserService userService, IOptions<JWTOptions> jwtOptions)
+        public AuthController(IFacebookService facebook, IUserService userService)
         {
             _facebookService = facebook;
             _userService = userService;
-            _jwtOptions = jwtOptions.Value;
         }
 
         [Route("/SignInViaFacebook")]
@@ -49,12 +47,11 @@ namespace PAM.Controllers
                         Name = profile.Name
                     });
 
-            var jwt = CreateJWT(userInfo);
+            //var jwt = CreateJWT(userInfo);
 
             var claims = new List<Claim> {
                 new Claim(ClaimTypes.Name, userInfo.Email),
-                new Claim("FullName", userInfo.Name),
-                new Claim("JWT", jwt)
+                //new Claim("JWT", jwt)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -67,30 +64,5 @@ namespace PAM.Controllers
             return RedirectToAction("Index", "Assets");
         }
 
-        private string CreateJWT(UserDTO user)
-        {
-            if (user == null)
-                throw new AuthException("Can't create jwt - user not found");
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Issuer = "PAM",
-                Audience = "*.PAM",
-                IssuedAt = DateTime.Now,
-                NotBefore = DateTime.Now,
-                Expires = DateTime.UtcNow.AddDays(7),
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Email),
-                    new Claim("FullName", user.Name)
-                }),
-                SigningCredentials = new X509SigningCredentials(new X509Certificate2(_jwtOptions.SigningCertificate, _jwtOptions.SigningPassword)),
-                EncryptingCredentials = new X509EncryptingCredentials(new X509Certificate2(_jwtOptions.EncryptionCertificate, _jwtOptions.EncryptionPassword))
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
     }
 }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -11,26 +7,40 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using PAM.Infrastructure.Options;
 using PAM.UserService.Mappings;
 using PAM.UserService.Model;
+using PAM.UserService.Options;
 using PAM.UserService.Services;
+using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 
 namespace PAM.UserService
 {
     public class Startup
     {
-        public Startup(ILogger<Startup> logger, IConfiguration configuration)
+        public Startup(ILogger<Startup> logger, IConfiguration configuration,
+            IOptions<MongoOptions> mongoOptions, IOptions<JWTOptions> jwtOptions)
         {
             Configuration = configuration;
             Logger = logger;
+
+            JWTOptions = jwtOptions.Value;
+            MongoOptions = mongoOptions.Value;
 
             PrintVersionToLog();
         }
 
         public IConfiguration Configuration { get; }
 
-        public ILogger<Startup> Logger { get;  }
+        public ILogger<Startup> Logger { get; }
+
+        public JWTOptions JWTOptions { get; set; }
+
+        public MongoOptions MongoOptions { get; set; }
 
         private void PrintVersionToLog()
         {
@@ -39,6 +49,25 @@ namespace PAM.UserService
 
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = "PAM",
+                            ValidateAudience = true,
+                            ValidAudience = "*.PAM",
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new X509SecurityKey(new X509Certificate2(JWTOptions.SigningCertificate, JWTOptions.SigningPassword)),
+                            TokenDecryptionKey = new X509SecurityKey(new X509Certificate2(JWTOptions.EncryptionCertificate, JWTOptions.EncryptionPassword))
+                        };
+
+                    });
+
             Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
             services.AddAutoMapper();
 
@@ -56,6 +85,8 @@ namespace PAM.UserService
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
+
             app.UseMvc();
         }
 
@@ -63,22 +94,25 @@ namespace PAM.UserService
         {
             try
             {
-                var client = new MongoClient(Configuration.GetConnectionString("UserDb"));
-                var db = client.GetDatabase(Configuration.GetValue<string>("Database"));
-                var userCollection = db.GetCollection<User>(Configuration.GetValue<string>("UserCollection"));
+                var client = new MongoClient(MongoOptions.Server);
+                var db = client.GetDatabase(MongoOptions.Database);
+                var userCollection = db.GetCollection<User>(MongoOptions.UserCollection);
                 var indexes = userCollection.Indexes.List().ToList();
-                if (!indexes.Any(x=>x["name"] == "_idx_email"))
+                if (!indexes.Any(x => x["name"] == "_idx_email"))
                 {
-                    var indexModel = new CreateIndexModel<User>(Builders<User>.IndexKeys.Ascending(x => x.Email), new CreateIndexOptions { Name = "_idx_email", Unique = true });
+                    var indexModel = new CreateIndexModel<User>(
+                        Builders<User>.IndexKeys.Ascending(x => x.Email), 
+                        new CreateIndexOptions { Name = "_idx_email", Unique = true });
+
                     userCollection.Indexes.CreateOne(indexModel);
                 }
             }
-            catch(MongoConnectionException)
+            catch (MongoConnectionException)
             {
                 Logger.LogError("Can't setup database. Server unavailable.");
                 throw;
             }
-            catch(MongoException)
+            catch (MongoException)
             {
                 Logger.LogError("Can't setup database. Index setup failed.");
                 throw;

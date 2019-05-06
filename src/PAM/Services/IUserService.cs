@@ -7,5 +7,7 @@ namespace PAM.Services
     {
         Task<UserDTO> GetUserByEmailAsync(string email);
         Task<UserDTO> CreateUserAsync(UserDTO userDTO);
+
+        Task AddHousehold(string jwt, string name);
     }
 }

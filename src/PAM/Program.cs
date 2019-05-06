@@ -22,7 +22,6 @@ namespace PAM
             var configuration = hostingContext.Configuration;
 
             services.AddOptions()
-                .Configure<JWTOptions>(configuration.GetSection("JWT"))
                 .Configure<ServicesOptions>(configuration.GetSection("Services"));
         }
     }

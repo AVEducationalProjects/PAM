@@ -4,14 +4,17 @@ component "User Service"{
 
     class User {
         UserID
-        Credentials
-
-        Create(UserID, Credentials)
+        Email
+        Name
+        --
+        {static} Create(Email, Name)
+        {static} FindByEmail(Email)
+        Update(Name)
+        --
         CreateHousehold(Name)
-        ShareHousehold(Name, UserID)
-        AcceptHouseholdShare(Name)
-        DeleteHousehold(Name)
-        RenameHousehold(Name, NewName)
+        ShareHousehold(Household, User)
+        AcceptHouseholdShare(Household)
+        DeleteHousehold(Household)
     }
 
     class PermissionToManageHousehold{
@@ -30,13 +33,14 @@ component "Asset Service" as AssetBase{
         HouseholdId
         Name
 
-        Create(Name)
         SetName(Name)
         CreateAssetType(Name, TypicalLifecycle?)
         CreateAsset(Name, AssetType, Lifecycle?)
     }
 
     class AssetType{
+        AssetTypeId
+        HouseholdId
         Name
         TypicalLifecycle
 

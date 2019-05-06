@@ -21,5 +21,7 @@ namespace PAM.UserService.Model
         public string Name { get; set; }
         
         public IList<ObjectId> Households { get; set; }
+
+        public IList<ObjectId> HouseholdInvites { get; set; }
     }
 }

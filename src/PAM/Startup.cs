@@ -17,16 +17,13 @@ namespace PAM
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IOptions<JWTOptions> jwtOptions)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            JWTOptions = jwtOptions.Value;
         }
 
         public IConfiguration Configuration { get; }
-        public JWTOptions JWTOptions { get; set; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient<IFacebookService, FacebookClient>();
@@ -34,6 +31,7 @@ namespace PAM
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => {
+                    options.LoginPath = "/";
                     options.Cookie.HttpOnly = true;
                 });
 

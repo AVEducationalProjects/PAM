@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PAM", "PAM\PAM.csproj", "{5BF5986C-2522-4A29-8B69-30F4FD544671}"
 EndProject
@@ -16,7 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PAM.UserService", "PAM.User
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{33A256B2-EF6B-42A1-8710-94A1BB826FF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PAM.UserService.DTO", "PAM.UserService.DTO\PAM.UserService.DTO.csproj", "{8EEB0086-B0CA-4E92-A3B7-A1A050644916}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PAM.UserService.DTO", "PAM.UserService.DTO\PAM.UserService.DTO.csproj", "{8EEB0086-B0CA-4E92-A3B7-A1A050644916}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PAM.Infrastructure", "PAM.Infrastructure\PAM.Infrastructure.csproj", "{BD45436F-1FCF-417D-989E-689EF6088B20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{8EEB0086-B0CA-4E92-A3B7-A1A050644916}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EEB0086-B0CA-4E92-A3B7-A1A050644916}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EEB0086-B0CA-4E92-A3B7-A1A050644916}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD45436F-1FCF-417D-989E-689EF6088B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD45436F-1FCF-417D-989E-689EF6088B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD45436F-1FCF-417D-989E-689EF6088B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD45436F-1FCF-417D-989E-689EF6088B20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

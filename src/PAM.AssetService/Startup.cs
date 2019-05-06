@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using PAM.AssetService.Options;
+using PAM.Infrastructure.Options;
 using System.Security.Cryptography.X509Certificates;
 
 namespace PAM.AssetService

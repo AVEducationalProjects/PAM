@@ -12,12 +12,21 @@ namespace PAM.Services.UserService
     public class UserServiceClient : IUserService
     {
         private readonly string _url;
+        private readonly string _householdUrl;
         private readonly HttpClient _httpClient;
 
         public UserServiceClient(HttpClient httpClient, IOptions<ServicesOptions> options)
         {
             _url = $"{options.Value.UserService}/Users";
+            _householdUrl = $"{options.Value.UserService}/Households";
             _httpClient = httpClient;
+        }
+
+        public async Task AddHousehold(string jwt, string name)
+        {
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {jwt}");
+            var content = new StringContent("{'name' : '" + name + "'}", Encoding.UTF8, "application/json");
+            await _httpClient.PostAsync($"{_householdUrl}?name={name}", content);
         }
 
         public async Task<UserDTO> CreateUserAsync(UserDTO userDTO)

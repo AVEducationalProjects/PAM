@@ -8,6 +8,8 @@ services:
       - ConnectionStrings__UserDb=mongodb://mongo:27017
     ports:
       - "8001:80"
+    volumes:
+      - ./certs:/root/.dotnet/certs
 
   assetservice.pam:
     environment:

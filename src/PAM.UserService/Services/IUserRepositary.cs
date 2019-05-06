@@ -1,12 +1,12 @@
 ﻿using PAM.UserService.Model;
+using System.Threading.Tasks;
 
 namespace PAM.UserService.Services
 {
     public interface IUserRepositary
     {
-        User FindByEmail(string email);
-        User Create(User user);
-        void DeleteByEmail(string email);
-        User CreateOrUpdate(User user);
+        Task<User> FindByEmail(string email);
+        Task<User> Create(User user);
+        Task<User> Update(User user);
     }
 }

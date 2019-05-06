@@ -1,10 +1,9 @@
-﻿namespace PAM.Options
+﻿namespace PAM.Infrastructure.Options
 {
-    public class JWTOptions
+    public class JWTSigninOptions
     {
         public string SigningPassword { get; set; }
         public string SigningCertificate { get; set; }
-
         public string EncryptionPassword { get; set; }
         public string EncryptionCertificate { get; set; }
     }

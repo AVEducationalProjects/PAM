@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using PAM.AssetService.Options;
+using PAM.Infrastructure.Options;
 
 namespace PAM.AssetService
 {

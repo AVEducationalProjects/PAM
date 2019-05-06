@@ -4,3 +4,10 @@
 @{
 }
 <h1>OK</h1>
+
+
+@using (Html.BeginForm("AddHousehold", "Assets", FormMethod.Post))
+{
+    <div>@Html.TextBox("Name")</div>
+    <div><input type="submit" /> </div>
+}

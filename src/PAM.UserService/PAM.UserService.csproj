@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PAM.Infrastructure\PAM.Infrastructure.csproj" />
     <ProjectReference Include="..\PAM.UserService.DTO\PAM.UserService.DTO.csproj" />
   </ItemGroup>
 
