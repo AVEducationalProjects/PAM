@@ -34,12 +34,16 @@ namespace PAM.UserService.Services
             return user;
         }
 
-        public async Task<User> Update(User user)
+        public async Task<User> Update(string email, User user)
         {
-            if (!(await Users.FindAsync(x => x.Email == user.Email)).Any())
+            var storedUser = (await Users.FindAsync(x => x.Email == email)).SingleOrDefault();
+            if (storedUser == null)
                 throw new ApplicationException("Try to update user, which not exist.");
 
-            await Users.FindOneAndReplaceAsync(x => x.Email == user.Email, user);
+            user.Id = storedUser.Id;
+            user.Email = storedUser.Email;
+
+            await Users.FindOneAndReplaceAsync(x => x.Email == email, user);
 
             Logger.LogInformation("User updated", user);
 

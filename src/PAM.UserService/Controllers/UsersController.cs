@@ -61,6 +61,15 @@ namespace PAM.UserService.Controllers
             return Created($"/users/{user.Email}", _mapper.Map<UserDTO>(storedUser));
         }
 
+        [HttpPatch]
+        [Route("/users/{email}")]
+        public async Task<ActionResult<UserDTO>> Patch([FromRoute]string email, UserDTO user)
+        {
+            await _userRepositary.Update(email, _mapper.Map<User>(user));
+
+            return NoContent();
+        }
+
         [HttpPost]
         [Route("/users/{email}/actions/get-token")]
         [AllowAnonymous]
@@ -77,7 +86,7 @@ namespace PAM.UserService.Controllers
                 Token = CreateJWT(user)
             };
 
-            return Ok(result);
+            return Created("", result);
         }
 
         private string CreateJWT(UserDTO user)
@@ -95,7 +104,7 @@ namespace PAM.UserService.Controllers
                     new Claim("FullName", user.Name)
                 }),
                 SigningCredentials = new X509SigningCredentials(new X509Certificate2(_jwtOptions.SigningCertificate, _jwtOptions.SigningPassword)),
-                EncryptingCredentials = new X509EncryptingCredentials(new X509Certificate2(_jwtOptions.EncryptionCertificate, _jwtOptions.EncryptionPassword))
+                EncryptingCredentials = new X509EncryptingCredentials(new X509Certificate2(_jwtOptions.EncryptionCertificate))
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

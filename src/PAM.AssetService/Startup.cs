@@ -37,7 +37,7 @@ namespace PAM.AssetService
                             ValidAudience = "*.PAM",
                             ValidateLifetime = true,
                             ValidateIssuerSigningKey = true,
-                            IssuerSigningKey = new X509SecurityKey(new X509Certificate2(JWTOptions.SigningCertificate, JWTOptions.SigningPassword)),
+                            IssuerSigningKey = new X509SecurityKey(new X509Certificate2(JWTOptions.SigningCertificate)),
                             TokenDecryptionKey = new X509SecurityKey(new X509Certificate2(JWTOptions.EncryptionCertificate, JWTOptions.EncryptionPassword))
                         };
 

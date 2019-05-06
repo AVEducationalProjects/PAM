@@ -5,7 +5,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__UserDb=mongodb://mongo:27017
+      - Mongo__Server=mongodb://mongo:27017
     ports:
       - "8001:80"
     volumes:
@@ -15,7 +15,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__UserDb=mongodb://mongo:27017
+      - Mongo__Server=mongodb://mongo:27017
     ports:
       - "8002:80"
     volumes:
