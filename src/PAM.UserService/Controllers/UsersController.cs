@@ -63,9 +63,16 @@ namespace PAM.UserService.Controllers
 
         [HttpPatch]
         [Route("/users/{email}")]
-        public async Task<ActionResult<UserDTO>> Patch([FromRoute]string email, UserDTO user)
+        public async Task<ActionResult<UserDTO>> Patch([FromRoute]string email, UserPatchDTO userPatch)
         {
-            await _userRepositary.Update(email, _mapper.Map<User>(user));
+            var user = await _userRepositary.FindByEmail(email);
+
+            if (user == null)
+                throw new ApplicationException("User doesn't exist.");
+
+            _mapper.Map(userPatch, user);
+
+            await _userRepositary.Update(user);
 
             return NoContent();
         }

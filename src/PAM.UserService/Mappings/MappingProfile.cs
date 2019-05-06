@@ -10,6 +10,9 @@ namespace PAM.UserService.Mappings
         {
             CreateMap<UserDTO, User>();
             CreateMap<User, UserDTO>();
+            CreateMap<UserPatchDTO, User>().ForAllMembers(
+                opt => opt.Condition(
+                    (source, dest, sourceMember, destMember) => (sourceMember != null)));
         }
     }
 }
