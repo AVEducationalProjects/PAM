@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson;
 using PAM.Infrastructure.Options;
 using PAM.UserService.DTO;
 using PAM.UserService.Model;
-using PAM.UserService.Options;
 using PAM.UserService.Services;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -51,6 +51,7 @@ namespace PAM.UserService.Controllers
         }
 
         [HttpPost]
+        [Route("/users")]
         [AllowAnonymous]
         public async Task<ActionResult<UserDTO>> Post(UserDTO user)
         {
@@ -63,7 +64,7 @@ namespace PAM.UserService.Controllers
 
         [HttpPatch]
         [Route("/users/{email}")]
-        public async Task<ActionResult<UserDTO>> Patch([FromRoute]string email, UserPatchDTO userPatch)
+        public async Task<ActionResult> Patch([FromRoute]string email, UserPatchDTO userPatch)
         {
             var user = await _userRepositary.FindByEmail(email);
 
@@ -118,5 +119,62 @@ namespace PAM.UserService.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
+        [HttpGet]
+        [Route("/users/{email}/households")]
+        public async Task<ActionResult<HouseholdDTO[]>> GetHouseholds([FromRoute]string email)
+        {
+            var user = await _userRepositary.FindByEmail(email);
+
+            if (user == null)
+                return NotFound();
+
+            var result = await _householdRepositary.FindHouseholdsById(user.Households);
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("/users/{email}/households")]
+        public async Task<ActionResult<HouseholdDTO[]>> PostHousehold([FromRoute]string email, HouseholdDTO household)
+        {
+            var user = await _userRepositary.FindByEmail(email);
+
+            if (user == null)
+                throw new ApplicationException("User does not exist.");
+
+            var result = await _householdRepositary.Create(user, _mapper.Map<Household>(household));
+
+            return Created($"/users/{email}/households/{result.Id}", result);
+        }
+
+        [HttpDelete]
+        [Route("/users/{email}/households/{id}")]
+        public async Task<ActionResult> DeleteHousehold([FromRoute]string email, [FromRoute]string id)
+        {
+            var user = await _userRepositary.FindByEmail(email);
+
+            if (user == null)
+                throw new ApplicationException("User does not exist.");
+
+            await _householdRepositary.RemoveUserHousehold(user, ObjectId.Parse(id));
+
+            return NoContent();
+        }
+
+        [HttpPost]
+        [Route("/users/{email}/households/{id}/actions/share")]
+        public async Task<ActionResult> ShareHousehold([FromRoute]string email, [FromRoute]string id, ShareHouseholdDTO shareHousehold)
+        {
+            var user = await _userRepositary.FindByEmail(shareHousehold.UserToShareWith);
+
+            if (user == null)
+                throw new ApplicationException("User does not exist.");
+
+            await _householdRepositary.AddHouseholdToUser(user, ObjectId.Parse(id));
+
+            return Accepted();
+        }
+
     }
 }

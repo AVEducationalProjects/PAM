@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using PAM.UserService.Model;
 using PAM.UserService.Options;
@@ -40,7 +40,34 @@ namespace PAM.UserService.Services
             await Users.FindOneAndUpdateAsync(x => x.Id == user.Id, 
                 Builders<User>.Update.AddToSet(x=>x.Households, household.Id));
 
+            Logger.LogInformation("New household created", household);
+
             return household;
+        }
+
+        public async Task<Household[]> FindHouseholdsById(IEnumerable<ObjectId> households)
+        {
+            var result = await Households.FindAsync(x => households.Contains(x.Id));
+            return result.ToList().ToArray();
+        }
+
+        public async Task RemoveUserHousehold(User user, ObjectId householdId)
+        {
+            await Users.FindOneAndUpdateAsync(x => x.Id == user.Id,
+                Builders<User>.Update.Pull(x => x.Households, householdId));
+
+            Logger.LogInformation("Household removes from user", user, householdId);
+        }
+
+        public async Task AddHouseholdToUser(User user, ObjectId householdId)
+        {
+            if (!(await Households.FindAsync(x => x.Id == householdId)).Any())
+                throw new ApplicationException("Household doesn't exist.");
+
+            await Users.FindOneAndUpdateAsync(x => x.Id == user.Id,
+                Builders<User>.Update.AddToSet(x => x.Households, householdId));
+
+            Logger.LogInformation("Household adds to user", user, householdId);
         }
     }
 }

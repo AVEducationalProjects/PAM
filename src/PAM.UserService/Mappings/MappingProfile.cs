@@ -13,6 +13,9 @@ namespace PAM.UserService.Mappings
             CreateMap<UserPatchDTO, User>().ForAllMembers(
                 opt => opt.Condition(
                     (source, dest, sourceMember, destMember) => (sourceMember != null)));
+
+            CreateMap<Household, HouseholdDTO>();
+            CreateMap<HouseholdDTO, Household>();
         }
     }
 }

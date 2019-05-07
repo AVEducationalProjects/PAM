@@ -14,6 +14,7 @@ using PAM.UserService.Mappings;
 using PAM.UserService.Model;
 using PAM.UserService.Options;
 using PAM.UserService.Services;
+using Swashbuckle.AspNetCore.Swagger;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
@@ -76,6 +77,11 @@ namespace PAM.UserService
             services.AddScoped<IHouseholdRepositary, HouseholdRepositary>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "PAM User Service API", Version = "v1" });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -86,6 +92,13 @@ namespace PAM.UserService
             }
 
             app.UseAuthentication();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "PAM User Service API");
+            });
 
             app.UseMvc();
         }

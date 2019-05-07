@@ -1,10 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using PAM.UserService.Model;
 using PAM.UserService.Options;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
