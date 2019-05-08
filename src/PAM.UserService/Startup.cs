@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using PAM.Infrastructure.Options;
+using PAM.UserService.Authorization;
 using PAM.UserService.Mappings;
 using PAM.UserService.Model;
 using PAM.UserService.Options;
@@ -68,6 +70,12 @@ namespace PAM.UserService
                         };
 
                     });
+
+            services.AddAuthorization(options => {
+                options.AddPolicy("UserProfilePolicy", policy => policy.Requirements.Add(new ProfileRequirement()));
+            });
+
+            services.AddSingleton<IAuthorizationHandler, ProfileAuthorizationHandler>();
 
             Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
             services.AddAutoMapper();

@@ -21,34 +21,26 @@ namespace PAM.UserService.Controllers
     [Authorize]
     public class UsersController : ControllerBase
     {
+        private readonly IAuthorizationService _authorizationService;
         private readonly IMapper _mapper;
         private readonly IUserRepositary _userRepositary;
         private readonly IHouseholdRepositary _householdRepositary;
         private readonly JWTSigninOptions _jwtOptions;
 
-        public UsersController(IMapper mapper, 
+        public UsersController(
+            IAuthorizationService authorizationService,
+            IMapper mapper, 
             IUserRepositary userRepositary, 
             IHouseholdRepositary householdRepositary, 
             IOptions<JWTSigninOptions> jwtOptions)
         {
+            _authorizationService = authorizationService;
             _mapper = mapper;
             _userRepositary = userRepositary;
             _householdRepositary = householdRepositary;
             _jwtOptions = jwtOptions.Value;
         }
 
-        [HttpGet]
-        [Route("/users/{email}")]
-        public async Task<ActionResult<UserDTO>> Get([FromRoute]string email)
-        {
-            var result = _mapper.Map<UserDTO>(
-                await _userRepositary.FindByEmail(email));
-
-            if (result == null)
-                return NotFound();
-
-            return Ok(result);
-        }
 
         [HttpPost]
         [Route("/users")]
@@ -57,25 +49,9 @@ namespace PAM.UserService.Controllers
         {
             var storedUser = await _userRepositary.Create(_mapper.Map<User>(user));
 
-            await _householdRepositary.Create(storedUser, new Household { Name = "Default"});
+            await _householdRepositary.Create(storedUser, new Household { Name = "Default" });
 
             return Created($"/users/{user.Email}", _mapper.Map<UserDTO>(storedUser));
-        }
-
-        [HttpPatch]
-        [Route("/users/{email}")]
-        public async Task<ActionResult> Patch([FromRoute]string email, UserPatchDTO userPatch)
-        {
-            var user = await _userRepositary.FindByEmail(email);
-
-            if (user == null)
-                throw new ApplicationException("User doesn't exist.");
-
-            _mapper.Map(userPatch, user);
-
-            await _userRepositary.Update(user);
-
-            return NoContent();
         }
 
         [HttpPost]
@@ -120,16 +96,59 @@ namespace PAM.UserService.Controllers
             return tokenHandler.WriteToken(token);
         }
 
+        private async Task<bool> UserCanAccessProfile(User profile)
+        {
+            var authorizeResult = await _authorizationService.AuthorizeAsync(User, profile, "UserProfilePolicy");
+            return authorizeResult.Succeeded;
+        }
+
+        [HttpGet]
+        [Route("/users/{email}")]
+        public async Task<ActionResult<UserDTO>> Get([FromRoute]string email)
+        {
+            var storedUser = await _userRepositary.FindByEmail(email);
+
+            if (storedUser == null)
+                return NotFound();
+
+            if (!await UserCanAccessProfile(storedUser))
+                return Forbid();
+
+            return Ok(_mapper.Map<UserDTO>(storedUser));
+        }
+
+        [HttpPatch]
+        [Route("/users/{email}")]
+        public async Task<ActionResult> Patch([FromRoute]string email, UserPatchDTO userPatch)
+        {
+            var storedUser = await _userRepositary.FindByEmail(email);
+
+            if (storedUser == null)
+                return NotFound();
+
+            if (!await UserCanAccessProfile(storedUser))
+                return Forbid();
+
+            _mapper.Map(userPatch, storedUser);
+
+            await _userRepositary.Update(storedUser);
+
+            return NoContent();
+        }
+
         [HttpGet]
         [Route("/users/{email}/households")]
         public async Task<ActionResult<HouseholdDTO[]>> GetHouseholds([FromRoute]string email)
         {
-            var user = await _userRepositary.FindByEmail(email);
+            var storedUser = await _userRepositary.FindByEmail(email);
 
-            if (user == null)
+            if (storedUser == null)
                 return NotFound();
 
-            var result = await _householdRepositary.FindHouseholdsById(user.Households);
+            if (!await UserCanAccessProfile(storedUser))
+                return Forbid();
+
+            var result = await _householdRepositary.FindHouseholdsById(storedUser.Households);
 
             return Ok(result);
         }
@@ -138,12 +157,15 @@ namespace PAM.UserService.Controllers
         [Route("/users/{email}/households")]
         public async Task<ActionResult<HouseholdDTO[]>> PostHousehold([FromRoute]string email, HouseholdDTO household)
         {
-            var user = await _userRepositary.FindByEmail(email);
+            var storedUser = await _userRepositary.FindByEmail(email);
 
-            if (user == null)
-                throw new ApplicationException("User does not exist.");
+            if (storedUser == null)
+                return NotFound();
 
-            var result = await _householdRepositary.Create(user, _mapper.Map<Household>(household));
+            if (!await UserCanAccessProfile(storedUser))
+                return Forbid();
+
+            var result = await _householdRepositary.Create(storedUser, _mapper.Map<Household>(household));
 
             return Created($"/users/{email}/households/{result.Id}", result);
         }
@@ -152,12 +174,15 @@ namespace PAM.UserService.Controllers
         [Route("/users/{email}/households/{id}")]
         public async Task<ActionResult> DeleteHousehold([FromRoute]string email, [FromRoute]string id)
         {
-            var user = await _userRepositary.FindByEmail(email);
+            var storedUser = await _userRepositary.FindByEmail(email);
 
-            if (user == null)
-                throw new ApplicationException("User does not exist.");
+            if (storedUser == null)
+                return NotFound();
 
-            await _householdRepositary.RemoveUserHousehold(user, ObjectId.Parse(id));
+            if (!await UserCanAccessProfile(storedUser))
+                return Forbid();
+
+            await _householdRepositary.RemoveUserHousehold(storedUser, ObjectId.Parse(id));
 
             return NoContent();
         }
@@ -166,10 +191,15 @@ namespace PAM.UserService.Controllers
         [Route("/users/{email}/households/{id}/actions/share")]
         public async Task<ActionResult> ShareHousehold([FromRoute]string email, [FromRoute]string id, ShareHouseholdDTO shareHousehold)
         {
-            var user = await _userRepositary.FindByEmail(shareHousehold.UserToShareWith);
+            var storedUser = await _userRepositary.FindByEmail(email);
 
-            if (user == null)
-                throw new ApplicationException("User does not exist.");
+            if (storedUser == null)
+                return NotFound();
+
+            if (!await UserCanAccessProfile(storedUser))
+                return Forbid();
+
+            var user = await _userRepositary.FindByEmail(shareHousehold.UserToShareWith);
 
             await _householdRepositary.AddHouseholdToUser(user, ObjectId.Parse(id));
 
