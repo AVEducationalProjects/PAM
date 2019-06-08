@@ -59,22 +59,30 @@ namespace PAM.UserService.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<TokenDTO>> GetToken([FromRoute]string email)
         {
-            var user = _mapper.Map<UserDTO>(
-                await _userRepositary.FindByEmail(email));
+            var storedUser = await _userRepositary.FindByEmail(email);
 
-            if (user == null)
+            if (storedUser == null)
                 return NotFound();
 
             var result = new TokenDTO
             {
-                Token = CreateJWT(user)
+                Token = CreateJWT(storedUser)
             };
 
             return Created("", result);
         }
 
-        private string CreateJWT(UserDTO user)
+        private string CreateJWT(User user)
         {
+            var subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim("FullName", user.Name)
+                });
+
+            foreach (var household in user.Households)
+                subject.AddClaim(new Claim("Households", household.ToString()));
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Issuer = "PAM",
@@ -82,11 +90,7 @@ namespace PAM.UserService.Controllers
                 IssuedAt = DateTime.Now,
                 NotBefore = DateTime.Now,
                 Expires = DateTime.UtcNow.AddDays(7),
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Email),
-                    new Claim("FullName", user.Name)
-                }),
+                Subject = subject,
                 SigningCredentials = new X509SigningCredentials(new X509Certificate2(_jwtOptions.SigningCertificate, _jwtOptions.SigningPassword)),
                 EncryptingCredentials = new X509EncryptingCredentials(new X509Certificate2(_jwtOptions.EncryptionCertificate))
             };
@@ -104,15 +108,13 @@ namespace PAM.UserService.Controllers
 
         [HttpGet]
         [Route("/users/{email}")]
+        [AllowAnonymous]
         public async Task<ActionResult<UserDTO>> Get([FromRoute]string email)
         {
             var storedUser = await _userRepositary.FindByEmail(email);
 
             if (storedUser == null)
                 return NotFound();
-
-            if (!await UserCanAccessProfile(storedUser))
-                return Forbid();
 
             return Ok(_mapper.Map<UserDTO>(storedUser));
         }

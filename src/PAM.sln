@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PAM.UserService.DTO", "PAM.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PAM.Infrastructure", "PAM.Infrastructure\PAM.Infrastructure.csproj", "{BD45436F-1FCF-417D-989E-689EF6088B20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PAM.AssetService.DTO", "PAM.AssetService.DTO\PAM.AssetService.DTO.csproj", "{2DF5E5AE-AC50-490A-8D43-40EA2E9F727A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{BD45436F-1FCF-417D-989E-689EF6088B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD45436F-1FCF-417D-989E-689EF6088B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD45436F-1FCF-417D-989E-689EF6088B20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DF5E5AE-AC50-490A-8D43-40EA2E9F727A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DF5E5AE-AC50-490A-8D43-40EA2E9F727A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DF5E5AE-AC50-490A-8D43-40EA2E9F727A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DF5E5AE-AC50-490A-8D43-40EA2E9F727A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

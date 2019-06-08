@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using PAM.AssetService.Options;
 using PAM.Infrastructure.Options;
+using Serilog;
 
 namespace PAM.AssetService
 {
@@ -14,6 +16,10 @@ namespace PAM.AssetService
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
+                    .ReadFrom.Configuration(hostingContext.Configuration)
+                    .Enrich.FromLogContext()
+                    .WriteTo.Console())
                 .ConfigureServices(ConfigureOptions)
                 .UseStartup<Startup>();
 
@@ -22,6 +28,7 @@ namespace PAM.AssetService
             var configuration = hostingContext.Configuration;
 
             services.AddOptions()
+                .Configure<MongoOptions>(configuration.GetSection("Mongo"))
                 .Configure<JWTOptions>(configuration.GetSection("JWT"));
         }
     }

@@ -1,18 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using PAM.Exceptions;
-using PAM.Options;
 using PAM.Services;
 using PAM.UserService.DTO;
-using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace PAM.Controllers
 {
@@ -21,7 +17,6 @@ namespace PAM.Controllers
         private readonly IFacebookService _facebookService;
 
         private readonly IUserService _userService;
-
 
         public AuthController(IFacebookService facebook, IUserService userService)
         {
@@ -47,12 +42,25 @@ namespace PAM.Controllers
                         Name = profile.Name
                     });
 
-            //var jwt = CreateJWT(userInfo);
+            await SignInAsUser(userInfo);
 
-            var claims = new List<Claim> {
+            return RedirectToAction("Index", "Assets");
+        }
+
+        private async Task SignInAsUser(UserDTO userInfo)
+        {
+            var jwt = await _userService.GetUserTokenAsync(userInfo.Email);
+            _userService.UseToken(jwt.Token);
+
+            var households = await _userService.GetUserHouseholdsAsync(userInfo.Email);
+
+            var claims = new List<Claim>
+            {
                 new Claim(ClaimTypes.Name, userInfo.Email),
-                //new Claim("JWT", jwt)
+                new Claim("JWT", jwt.Token),
             };
+
+            claims.AddRange(households.Select(h => new Claim("Households", JsonConvert.SerializeObject(h))));
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -60,9 +68,6 @@ namespace PAM.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity),
                 new AuthenticationProperties { });
-
-            return RedirectToAction("Index", "Assets");
         }
-
     }
 }
