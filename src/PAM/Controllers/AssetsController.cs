@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PAM.AssetService.DTO;
 using PAM.Services;
 
 namespace PAM.Controllers
@@ -14,14 +15,24 @@ namespace PAM.Controllers
     {
         public IUserService UserService { get; set; }
 
-        public AssetsController(IUserService userService)
+        public IAssetService AssetService { get; set; }
+
+        public AssetsController(IUserService userService, IAssetService assetService)
         {
             UserService = userService;
+            AssetService = assetService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var assets = await AssetService.GetAllAssetsAsync();
+            return View(assets);
+        }
+
+        public async Task<IActionResult> AddAsset(AssetDTO asset)
+        {
+            await AssetService.CreateAsync(asset);
+            return PartialView("AssetList", await AssetService.GetAllAssetsAsync());
         }
 
         public IActionResult AddHousehold(string name)

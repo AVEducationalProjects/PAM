@@ -1,0 +1,23 @@
+﻿@model IList<AssetDTO>
+
+<table id="assets-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Lifecycle (month)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ var orderNum = 1; }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@orderNum</td>
+                <td>@item.Name </td>
+                <td>@item.Lifecycle</td>
+            </tr>
+            orderNum++;
+        }
+    </tbody>
+</table>

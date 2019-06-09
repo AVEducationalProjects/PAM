@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PAM.AssetService.DTO\PAM.AssetService.DTO.csproj" />
     <ProjectReference Include="..\PAM.UserService.DTO\PAM.UserService.DTO.csproj" />
   </ItemGroup>
 

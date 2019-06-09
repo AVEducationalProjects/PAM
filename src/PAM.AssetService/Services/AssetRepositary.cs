@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -25,6 +26,11 @@ namespace PAM.AssetService.Services
         {
             await Assets.InsertOneAsync(asset);
             return asset;
+        }
+
+        public async Task<IList<Asset>> GetAll()
+        {
+            return await Assets.Find(_ => true).ToListAsync();
         }
     }
 }

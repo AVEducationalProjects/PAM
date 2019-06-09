@@ -25,6 +25,14 @@ namespace PAM.AssetService.Controllers
             _assetRepositary = assetRepositary;
         }
 
+        [HttpGet]
+        [Route("/assets")]
+        [AllowAnonymous]
+        public async Task<ActionResult<AssetDTO[]>> Get()
+        {
+            return _mapper.Map<AssetDTO[]>(await _assetRepositary.GetAll());
+        }
+
         [HttpPost]
         [Route("/assets")]
         [AllowAnonymous]

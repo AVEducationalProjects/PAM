@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PAM.Options;
 using PAM.Services;
+using PAM.Services.AssetService;
 using PAM.Services.Facebook;
 using PAM.Services.UserService;
 using System.Text;
@@ -28,6 +29,7 @@ namespace PAM
         {
             services.AddHttpClient<IFacebookService, FacebookClient>();
             services.AddHttpClient<IUserService, UserServiceClient>();
+            services.AddHttpClient<IAssetService, AssetServiceClient>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => {
