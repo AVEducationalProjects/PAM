@@ -17,7 +17,7 @@
 <body>
 
     <header>
-        <partial name="_HeaderMenu"/>
+        <partial name="_HeaderMenu" model="ViewBag.HeaderDTO"/>
     </header>
 
     <main class="container">
@@ -27,7 +27,7 @@
 
     <footer class="mt-5">
         <div class="container text-center">
-            <address>&copy; Alexander Morozov 2018-@DateTime.Now.Year - @DateTime.Now.ToShortTimeString() </address>
+            <address>&copy; Alexander Morozov 2018-@DateTime.Now.Year </address>
         </div>
     </footer>
 

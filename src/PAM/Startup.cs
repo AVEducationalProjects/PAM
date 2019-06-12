@@ -12,6 +12,7 @@ using PAM.Services;
 using PAM.Services.AssetService;
 using PAM.Services.Facebook;
 using PAM.Services.UserService;
+using System;
 using System.Text;
 
 namespace PAM
@@ -30,6 +31,13 @@ namespace PAM
             services.AddHttpClient<IFacebookService, FacebookClient>();
             services.AddHttpClient<IUserService, UserServiceClient>();
             services.AddHttpClient<IAssetService, AssetServiceClient>();
+
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => {
@@ -63,6 +71,7 @@ namespace PAM
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseSession();
             app.UseCookiePolicy();
 
             app.UseMvc(routes =>

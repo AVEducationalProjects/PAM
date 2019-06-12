@@ -13,5 +13,8 @@ namespace PAM.AssetService.Model
 
         [BsonRequired]
         public int Lifecycle { get; set; }
+
+        [BsonRequired]
+        public string HouseholdId { get; set; }
     }
 }
