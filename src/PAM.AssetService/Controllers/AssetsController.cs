@@ -39,7 +39,7 @@ namespace PAM.AssetService.Controllers
         public async Task<ActionResult<AssetDTO>> Post(AssetDTO user)
         {
             var storedAsset = await _assetRepositary.Create(_mapper.Map<Asset>(user));
-            return Created($"/asset/{storedAsset.Id}", _mapper.Map<AssetDTO>(storedAsset));
+            return Created($"/assets/{storedAsset.Id}", _mapper.Map<AssetDTO>(storedAsset));
         }
     }
 }

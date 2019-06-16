@@ -1,6 +1,6 @@
 @startuml Domain model
 
-component "User Service"{
+namespace Users{
 
     class User {
         UserID
@@ -17,30 +17,27 @@ component "User Service"{
         DeleteHousehold(Household)
     }
 
-    class PermissionToManageHousehold{
-        UserID,
-        HouseholdId,
-        Active
-    }
-
-    User "1"->"*" PermissionToManageHousehold : has
-
-}
-
-component "Asset Service" as AssetBase{
-
     class Household{
         HouseholdId
         Name
 
         SetName(Name)
+    }
+
+    User "*"->"*" Household : has
+
+}
+
+namespace Assets {
+    class Household{
+        HouseholdId
+
         CreateAssetType(Name, TypicalLifecycle?)
         CreateAsset(Name, AssetType, Lifecycle?)
     }
 
     class AssetType{
         AssetTypeId
-        HouseholdId
         Name
         TypicalLifecycle
 
@@ -54,6 +51,7 @@ component "Asset Service" as AssetBase{
         AssetID
         Name
         Lifecycle
+        CreatedDate
 
         SetName(Name)
         SetLifecycle(Lifecycle)
@@ -65,7 +63,6 @@ component "Asset Service" as AssetBase{
     Asset "*" -> "1" AssetType : grouped by
 }
 
-
-Household "1" <.left. "*" PermissionToManageHousehold : allows to operate
+Assets.Household .> Users.Household
 
 @enduml

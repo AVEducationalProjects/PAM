@@ -9,10 +9,7 @@ namespace PAM.AssetService
 {
     public class Program
     {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+        public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
@@ -25,7 +22,7 @@ namespace PAM.AssetService
 
         private static void ConfigureOptions(WebHostBuilderContext hostingContext, IServiceCollection services)
         {
-            var configuration = hostingContext.Configuration;
+            Microsoft.Extensions.Configuration.IConfiguration configuration = hostingContext.Configuration;
 
             services.AddOptions()
                 .Configure<MongoOptions>(configuration.GetSection("Mongo"))

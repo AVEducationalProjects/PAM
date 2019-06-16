@@ -4,11 +4,10 @@ using System.Text;
 
 namespace PAM.AssetService.DTO
 {
-    public class AssetDTO
+    public class AssetTypeDTO
     {
         public string Id { get; set; }
-        public DateTime Created { get; set; }
         public string Name { get; set; }
-        public int Lifecycle { get; set; }
+        public int TypicalLifecycle{ get; set; }
     }
 }

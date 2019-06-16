@@ -5,34 +5,48 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PAM.AssetService.Mappings;
+using PAM.AssetService.Options;
 using PAM.AssetService.Services;
 using PAM.Infrastructure.Options;
+using System;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
 namespace PAM.AssetService
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IOptions<JWTOptions> jwtOptions)
+        public Startup(ILogger<Startup> logger, IConfiguration configuration,
+            IOptions<MongoOptions> mongoOptions, IOptions<JWTOptions> jwtOptions)
         {
             Configuration = configuration;
+            Logger = logger;
+
             JWTOptions = jwtOptions.Value;
+            MongoOptions = mongoOptions.Value;
+
+            PrintVersionToLog();
         }
 
         public IConfiguration Configuration { get; }
 
+        public ILogger<Startup> Logger { get; }
+
         public JWTOptions JWTOptions { get; }
+
+        public MongoOptions MongoOptions { get; set; }
+
+        private void PrintVersionToLog()
+        {
+            Logger.LogInformation($"Personal Asset Manager Asset Service {Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion}");
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
-            services.AddAutoMapper();
-
-            services.AddScoped<IAssetRepositary, AssetRepositary>();
-
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
@@ -51,6 +65,11 @@ namespace PAM.AssetService
 
                     });
 
+            services.AddAutoMapper(typeof(MappingProfile));
+
+            SetupDatabase();
+            services.AddScoped<IAssetRepositary, AssetRepositary>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -63,7 +82,19 @@ namespace PAM.AssetService
 
             app.UseAuthentication();
 
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "PAM Asset Service API");
+            });
+
             app.UseMvc();
         }
+
+        private void SetupDatabase()
+        {
+        }
+
     }
 }

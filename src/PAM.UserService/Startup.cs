@@ -52,7 +52,6 @@ namespace PAM.UserService
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
@@ -77,8 +76,7 @@ namespace PAM.UserService
 
             services.AddSingleton<IAuthorizationHandler, ProfileAuthorizationHandler>();
 
-            Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
-            services.AddAutoMapper();
+            services.AddAutoMapper(typeof(MappingProfile));
 
             SetupDatabase();
             services.AddScoped<IUserRepositary, UserRepositary>();

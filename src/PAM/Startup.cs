@@ -5,24 +5,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using PAM.Options;
 using PAM.Services;
 using PAM.Services.AssetService;
 using PAM.Services.Facebook;
 using PAM.Services.UserService;
-using System;
-using System.Text;
 
 namespace PAM
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public Startup(IConfiguration configuration) => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
 
@@ -40,7 +32,8 @@ namespace PAM
             });
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => {
+                .AddCookie(options =>
+                {
                     options.LoginPath = "/";
                     options.Cookie.HttpOnly = true;
                 });
@@ -76,7 +69,7 @@ namespace PAM
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute("default", "{controller=Asset}/{action=Index}/{id?}");
             });
         }
     }
